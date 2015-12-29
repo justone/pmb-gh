@@ -9,7 +9,7 @@ import (
 
 func main() {
 
-	bus := pmb.GetPMB(make(map[string]string))
+	bus := pmb.GetPMB("")
 	id := pmb.GenerateRandomID("notify")
 
 	conn, err := bus.ConnectClient(id, false)
