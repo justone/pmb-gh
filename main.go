@@ -1,22 +1,25 @@
 package main
 
 import (
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"os"
 
+	"github.com/Sirupsen/logrus"
 	"github.com/justone/pmb/api"
 )
 
 func main() {
 
 	bus := pmb.GetPMB("")
-	id := pmb.GenerateRandomID("notify")
+	id := pmb.GenerateRandomID("github")
+
+	logrus.SetLevel(logrus.InfoLevel)
+	logrus.SetFormatter(&logrus.TextFormatter{FullTimestamp: true})
 
 	conn, err := bus.ConnectClient(id, false)
 	if err != nil {
-		fmt.Println(err)
+		logrus.Warnf("Error connecting to PMB: %s", err)
 		os.Exit(1)
 	}
 
@@ -26,10 +29,25 @@ func main() {
 			http.Error(w, "Unable to read request body: "+err.Error(), http.StatusInternalServerError)
 			return
 		}
-		fmt.Println(string(body))
+		var eventName string
+		if eventHeaders, ok := r.Header["X-Github-Event"]; ok {
+			eventName = eventHeaders[0]
+		} else {
+			logrus.Warnf("Github event name not found")
+			return
+		}
+
+		eventJSON := string(body)
+
+		notification, err := parseEvent(eventName, eventJSON)
+		if err != nil {
+			logrus.Warnf("Unable to parse event %s: %s, body: %s", eventName, err, eventJSON)
+			return
+		}
+
 		go func() {
-			pmb.SendNotificationWithLevel(conn, "Test message", 3)
+			pmb.SendNotification(conn, *notification)
 		}()
 	})
-	http.ListenAndServe(":3000", nil)
+	http.ListenAndServe("0.0.0.0:3000", nil)
 }
