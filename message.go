@@ -53,7 +53,8 @@ func parseEvent(name string, json string) (*pmb.Notification, error) {
 			return nil, fmt.Errorf("Unable to get url: %s", err)
 		}
 	default:
-		return nil, fmt.Errorf("Invalid message type '%s'", name)
+		message = fmt.Sprintf("Unhandled event %s for %s by %s.", name, repo, login)
+		url = ""
 	}
 
 	logrus.Debugf("message: %s", message)
