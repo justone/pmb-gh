@@ -21,12 +21,10 @@ var opts struct {
 
 func main() {
 
-	args, err := flags.Parse(&opts)
+	_, err := flags.Parse(&opts)
 	if err != nil {
-		panic(err)
 		os.Exit(1)
 	}
-	fmt.Println(args)
 
 	bus := pmb.GetPMB(opts.Primary)
 	id := pmb.GenerateRandomID("github")
