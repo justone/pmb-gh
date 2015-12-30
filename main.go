@@ -13,8 +13,10 @@ import (
 
 var opts struct {
 	Verbose bool    `short:"v" long:"verbose" description:"Show verbose debug information."`
-	Primary string  `short:"p" long:"primary" description:"Primary PMB URI."`
+	Primary string  `short:"m" long:"pmb-uri" description:"Primary PMB URI."`
 	Level   float64 `short:"l" long:"level" description:"Level at which to send notifications." default:"4"`
+	Host    string  `short:"h" long:"host" description:"Host to listen on." default:"0.0.0.0"`
+	Port    string  `short:"p" long:"port" description:"Port to listen on." default:"3000"`
 }
 
 func main() {
@@ -70,5 +72,6 @@ func main() {
 			pmb.SendNotification(conn, *notification)
 		}()
 	})
-	http.ListenAndServe("0.0.0.0:3000", nil)
+
+	http.ListenAndServe(fmt.Sprintf("%s:%s", opts.Host, opts.Port), nil)
 }
