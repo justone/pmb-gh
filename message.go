@@ -48,5 +48,5 @@ func parseEvent(name string, json string) (*pmb.Notification, error) {
 	logrus.Debugf("message: %s", message)
 	logrus.Debugf("url: %s", url)
 
-	return &pmb.Notification{message, url, 4}, nil
+	return &pmb.Notification{Message: message, URL: url}, nil
 }
