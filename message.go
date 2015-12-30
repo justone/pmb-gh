@@ -41,6 +41,17 @@ func parseEvent(name string, json string) (*pmb.Notification, error) {
 		if err != nil {
 			return nil, fmt.Errorf("Unable to get url: %s", err)
 		}
+	case "ping":
+		zen, err := tree.Get("zen").String()
+		if err != nil {
+			return nil, fmt.Errorf("Unable to get zen: %s", err)
+		}
+
+		message = fmt.Sprintf("Ping for %s by %s. Zen: %s", repo, login, zen)
+		url, err = tree.Get("repository").Get("html_url").String()
+		if err != nil {
+			return nil, fmt.Errorf("Unable to get url: %s", err)
+		}
 	default:
 		return nil, fmt.Errorf("Invalid message type '%s'", name)
 	}
