@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/Sirupsen/logrus"
 	"github.com/jessevdk/go-flags"
@@ -43,6 +44,14 @@ func main() {
 	}
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		var ip string
+		if realIP, ok := r.Header["X-Real-Ip"]; ok {
+			ip = realIP[0]
+		} else {
+			ip = r.RemoteAddr
+		}
+		logrus.Infof(strings.Join([]string{r.RequestURI, ip, r.Method, fmt.Sprintf("%s", r.Header)}, " "))
+
 		body, err := ioutil.ReadAll(r.Body)
 		if err != nil {
 			http.Error(w, "Unable to read request body: "+err.Error(), http.StatusInternalServerError)
@@ -66,6 +75,7 @@ func main() {
 
 		notification.Level = opts.Level
 
+		logrus.Infof("Sending notification: %s", notification)
 		go func() {
 			pmb.SendNotification(conn, *notification)
 		}()
