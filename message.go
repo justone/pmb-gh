@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/Sirupsen/logrus"
 	"github.com/bmatsuo/go-jsontree"
@@ -49,6 +50,9 @@ func parseEvent(name string, json string) (*pmb.Notification, error) {
 		ref, err := tree.Get("ref").String()
 		if err != nil {
 			return nil, fmt.Errorf("Unable to get ref: %s", err)
+		}
+		if strings.HasPrefix(ref, "refs/heads/") {
+			ref = strings.TrimPrefix(ref, "refs/heads/")
 		}
 		message = fmt.Sprintf("New push of %d commits to %s in %s by %s.", len(commits), ref, repo, login)
 		url, err = tree.Get("compare").String()
