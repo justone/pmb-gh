@@ -59,6 +59,35 @@ func parseEvent(name string, json string) (*pmb.Notification, error) {
 		if err != nil {
 			return nil, fmt.Errorf("Unable to get url: %s", err)
 		}
+	case "issue_comment":
+		action, err := tree.Get("action").String()
+		if err != nil {
+			return nil, fmt.Errorf("Unable to get action: %s", err)
+		}
+		issue, err := tree.Get("issue").Get("number").Number()
+		if err != nil {
+			return nil, fmt.Errorf("Unable to get issue number: %s", err)
+		}
+		issue_title, err := tree.Get("issue").Get("title").String()
+		if err != nil {
+			return nil, fmt.Errorf("Unable to get issue title: %s", err)
+		}
+		body, err := tree.Get("comment").Get("body").String()
+		if err != nil {
+			return nil, fmt.Errorf("Unable to get body: %s", err)
+		}
+		message = fmt.Sprintf(
+			"Comment %s on issue %d (%s) on %s by %s: %s",
+			action,
+			int(issue),
+			truncate(issue_title, 20),
+			repo,
+			login,
+			truncate(body, 40))
+		url, err = tree.Get("comment").Get("html_url").String()
+		if err != nil {
+			return nil, fmt.Errorf("Unable to get url: %s", err)
+		}
 	case "ping":
 		zen, err := tree.Get("zen").String()
 		if err != nil {
@@ -79,4 +108,11 @@ func parseEvent(name string, json string) (*pmb.Notification, error) {
 	logrus.Debugf("url: %s", url)
 
 	return &pmb.Notification{Message: message, URL: url}, nil
+}
+
+func truncate(data string, length int) string {
+	if len(data) > length {
+		return fmt.Sprintf("%s...", data[0:length])
+	}
+	return data
 }
