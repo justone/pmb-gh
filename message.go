@@ -41,6 +41,20 @@ func parseEvent(name string, json string) (*pmb.Notification, error) {
 		if err != nil {
 			return nil, fmt.Errorf("Unable to get url: %s", err)
 		}
+	case "push":
+		commits, err := tree.Get("commits").Array()
+		if err != nil {
+			return nil, fmt.Errorf("Unable to get commits: %s", err)
+		}
+		ref, err := tree.Get("ref").String()
+		if err != nil {
+			return nil, fmt.Errorf("Unable to get ref: %s", err)
+		}
+		message = fmt.Sprintf("New push of %d commits to %s in %s by %s.", len(commits), ref, repo, login)
+		url, err = tree.Get("compare").String()
+		if err != nil {
+			return nil, fmt.Errorf("Unable to get url: %s", err)
+		}
 	case "ping":
 		zen, err := tree.Get("zen").String()
 		if err != nil {
