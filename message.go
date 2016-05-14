@@ -88,6 +88,30 @@ func parseEvent(name string, json string) (*pmb.Notification, error) {
 		if err != nil {
 			return nil, fmt.Errorf("Unable to get url: %s", err)
 		}
+	case "issues":
+		action, err := tree.Get("action").String()
+		if err != nil {
+			return nil, fmt.Errorf("Unable to get action: %s", err)
+		}
+		issue, err := tree.Get("issue").Get("number").Number()
+		if err != nil {
+			return nil, fmt.Errorf("Unable to get issue number: %s", err)
+		}
+		issue_title, err := tree.Get("issue").Get("title").String()
+		if err != nil {
+			return nil, fmt.Errorf("Unable to get issue title: %s", err)
+		}
+		message = fmt.Sprintf(
+			"Issue %d (%s) %s on %s by %s.",
+			int(issue),
+			truncate(issue_title, 20),
+			action,
+			repo,
+			login)
+		url, err = tree.Get("issue").Get("html_url").String()
+		if err != nil {
+			return nil, fmt.Errorf("Unable to get url: %s", err)
+		}
 	case "ping":
 		zen, err := tree.Get("zen").String()
 		if err != nil {
