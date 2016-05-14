@@ -54,7 +54,7 @@ func parseEvent(name string, json string) (*pmb.Notification, error) {
 		if strings.HasPrefix(ref, "refs/heads/") {
 			ref = strings.TrimPrefix(ref, "refs/heads/")
 		}
-		message = fmt.Sprintf("New push of %d commit(s) to %s in %s by %s.", commits, ref, repo, login)
+		message = fmt.Sprintf("Push %d commit(s) to %s in %s by %s.", commits, ref, repo, login)
 		url, err = tree.Get("compare").String()
 		if err != nil {
 			return nil, fmt.Errorf("Unable to get url: %s", err)
