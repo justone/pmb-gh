@@ -51,7 +51,7 @@ func TestPush(t *testing.T) {
 		t.Errorf("Error: %s", err)
 	}
 
-	assert(t, note.Message == "New push of 1 commits to changes in baxterthehacker/public-repo by baxterthehacker.", "Message incorrect")
+	assert(t, note.Message == "New push of 1 commit(s) to changes in baxterthehacker/public-repo by baxterthehacker.", "Message incorrect")
 	assert(t, note.URL == "https://github.com/baxterthehacker/public-repo/compare/9049f1265b7d...0d1a26e67d8f", "URL incorrect")
 }
 
