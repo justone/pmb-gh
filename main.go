@@ -73,6 +73,11 @@ func main() {
 			return
 		}
 
+		if notification == nil {
+			logrus.Warnf("skipping notification")
+			return
+		}
+
 		notification.Level = opts.Level
 
 		logrus.Infof("Sending notification: %s", notification)
